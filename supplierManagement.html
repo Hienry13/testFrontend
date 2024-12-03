@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Management</title>
+    <link rel="stylesheet" href="supplierManagement.css">
+</head>
+
+<body id="body">
+    <!-- Navbar -->
+    <div class="l-navbar show" id="navbar">
+        <div class="nav">
+            <div>
+                <a href="#" class="nav_logo">
+                    <ion-icon name="logo-octocat" class="nav_logo-icon"></ion-icon>
+                    <span class="nav_logo-text">IM Systems</span>
+                </a>
+                <div class="nav_toggle" id="nav_toggle">
+                    <ion-icon name="chevron-back-outline"></ion-icon>
+                </div>
+                <ul class="nav_list">
+                    <a href="#" class="nav_link">
+                        <ion-icon name="grid" class="nav_icon"></ion-icon>
+                        <span class="nav_text">Dashboard</span>
+                    </a>
+                    <a href="#" class="nav_link ">
+                        <ion-icon name="file-tray-stacked" class="nav_icon"></ion-icon>
+                        <span class="nav_text">Product Management</span>
+                    </a>
+                    <a href="#" class="nav_link active" >
+                        <ion-icon name="people" class="nav_icon"></ion-icon>
+                        <span class="nav_text">Supplier Management</span>
+                    </a>
+                    <a href="#" class="nav_link">
+                        <ion-icon name="cloud-download" class="nav_icon"></ion-icon>
+                        <span class="nav_text">Inventory Out</span>
+                    </a>    
+                    <a href="/PhieuNK/phieunk.html" class="nav_link">
+                        <ion-icon name="cloud-upload" class="nav_icon"></ion-icon>
+                        <span class="nav_text">Inventory In</span>
+                    </a>
+                    <a href="#" class="nav_link">
+                        <ion-icon name="cart" class="nav_icon"></ion-icon>
+                        <span class="nav_text">Order Management</span>
+                    </a>
+                    <a href="#" class="nav_link">
+                        <ion-icon name="create" class="nav_icon"></ion-icon>
+                        <span class="nav_text">Report & Analytics</span>
+                    </a>
+                </ul>
+            </div>
+            <div>
+                <a href="#" class="nav_link" id="logout">
+                    <ion-icon name="log-out" class="nav_icon"></ion-icon>
+                    <span class="nav_text">Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Dropdown menu profile -->
+    <div class="menu-profile">
+        <div class="menu-profile-icon">
+            <ion-icon name="notifications" class="noti-icon"></ion-icon>
+            <img src="\Assets\user0.png" class="user-pic" id="userpic">
+        </div>
+        <div class="drop-menu-profile" id="drop-menu-profile">
+            <a href="#"> <img src="\Assets\user0.png" class="user-pic-in">Username0 </a>
+            <a href="#">
+                <ion-icon name="person"></ion-icon> Profile
+            </a>
+            <a href="#">
+                <ion-icon name="settings"></ion-icon> Settings
+            </a>
+            <a href="#">
+                <ion-icon name="help-circle"></ion-icon> Help & Support
+            </a>
+            <a href="#">
+                <ion-icon name="swap-horizontal"></ion-icon> Convert Account
+            </a>
+        </div>
+    </div>
+    <!-- Add Supplier Form -->
+    <div id="supplier-management">
+        <button id="add-supplier-btn" class="add-supplier-btn">Add Supplier</button>
+        <form class="supplier-form" id="supplier-form">
+            <span class="icon-close">
+                <ion-icon name="close"></ion-icon>
+            </span>
+            <input type="text" id="supplier-name" placeholder="Supplier Name" required>
+            <input type="text" id="supplier-contactNumber" placeholder="Contact Info" required>
+            <input type="text" id="supplier-address" placeholder="address" required>
+            <button id="save-supplier" class="save-supplier">Save Supplier</button>
+        </form>
+    </div>
+
+    <!-- Search Suppliers -->
+    <form action="" id="search-box" onsubmit="return false;">
+        <input type="text" id="search-text" placeholder="Search Suppliers" required>
+        <button id="search-button"><ion-icon name="search" id="search-icon"></ion-icon></button>
+    </form>
+    <button id="view-all-btn">View All</button>
+
+    
+    <!-- Supplier List -->
+    <table>
+        <thead>
+            <tr>
+                <th>Supplier ID</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="supplier-table-body">
+        </tbody>
+    </table>
+
+    <button class="notification-error" id="notification-error">
+        <ion-icon name="alert-circle" class="icon"></ion-icon>
+        <h2 id="content-error"></h2>
+    </button>
+    <button class="notification-success" id="notification-success">
+        <ion-icon name="checkmark" class="icon"></ion-icon>
+        <h2 id="content-success"></h2>
+    </button>
+
+    <script src="supplierManagement.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+
+</body>
+
+</html>
