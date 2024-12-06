@@ -552,3 +552,30 @@ table .edit-button:hover{
     display: block;
 }
 
+.add-product-btn {
+    background-color: #28a745; /* Green color */
+    color: var(--white-color);
+    margin-left: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-product-btn:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+#supplier-table-body tr[id^="product-input-row-"] {
+    background-color: #333 !important;
+}
+
+#supplier-table-body tr[id^="product-input-row-"] input {
+    border: 1px solid #666;
+    border-radius: 4px;
+}
+
+#supplier-table-body tr[id^="product-input-row-"] button {
+    transition: background-color 0.3s ease;
+}
+
+#supplier-table-body tr[id^="product-input-row-"] button:hover {
+    background-color: #218838;
+}

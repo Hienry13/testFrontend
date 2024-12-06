@@ -190,15 +190,17 @@ function displaySuppliers(suppliers) {
                 <td contenteditable="false" id="supplier-name-${supplier.supplierID}">${supplier.name}</td>
                 <td contenteditable="false" id="supplier-contactNumber-${supplier.supplierID}">${supplier.contactNumber}</td>
                 <td contenteditable="false" id="supplier-address-${supplier.supplierID}">${supplier.address}</td>
-                <td>${supplier.lastUpdate || "N/A"}</td>
                 <td>
                     <button id="edit-button-${supplier.supplierID}" onclick="toggleEditSupplier('${supplier.supplierID}', event)" class="edit-btn">Edit</button>
                     <button onclick="deleteSupplier('${supplier.supplierID}', event)" class="delete-btn">Delete</button>
+                    <button onclick="addProductToSupplier('${supplier.supplierID}')" class="add-product-btn">Add Product</button>
                 </td>
             </tr>`;
         tableBodySupplier.innerHTML += row;
     });
 }
+
+
 
 // Notifications
 const showNotificationError = (message) => {
@@ -265,3 +267,133 @@ document.getElementById("view-all-btn").addEventListener("click", (event) => {
     event.preventDefault();
     viewAllOrHideSuppliers();
 });
+
+
+// Add Product to Supplier Function
+function addProductToSupplier(supplierId) {
+    const row = document.getElementById(`supplier-row-${supplierId}`);
+    
+    // Remove any existing product input rows
+    const existingProductInputRow = document.getElementById(`product-input-row-${supplierId}`);
+    if (existingProductInputRow) {
+        existingProductInputRow.remove();
+        return;
+    }
+
+    // Create a new row for product input
+    const productInputRow = document.createElement('tr');
+    productInputRow.id = `product-input-row-${supplierId}`;
+    productInputRow.innerHTML = `
+        <td colspan="5" style="background-color: #333; padding: 10px;">
+            <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                <input 
+                    type="text" 
+                    id="product-id-input-${supplierId}" 
+                    placeholder="Enter Product ID" 
+                    style="padding: 5px; width: 200px;"
+                >
+                <button 
+                    onclick="submitProductToSupplier(${supplierId})" 
+                    style="
+                        padding: 5px 10px; 
+                        background-color: #28a745; 
+                        color: white; 
+                        border: none; 
+                        border-radius: 4px;
+                        cursor: pointer;
+                    "
+                >
+                    Submit
+                </button>
+            </div>
+        </td>
+    `;
+
+    // Insert the new row right after the current supplier row
+    row.insertAdjacentElement('afterend', productInputRow);
+
+    // Focus on the input field
+    document.getElementById(`product-id-input-${supplierId}`).focus();
+}
+
+function submitProductToSupplier(supplierId) {
+    // Get the product ID from the input
+    const productIdInput = document.getElementById(`product-id-input-${supplierId}`);
+    const productId = productIdInput.value.trim();
+
+    // Validate input
+    if (!productId) {
+        showNotificationError("Product ID cannot be empty.");
+        return;
+    }
+
+    // Fetch request to add product to supplier
+    fetch(`https://backend-ims-zuqh.onrender.com/api/suppliers/${supplierId}/products/${productId}`, {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json' 
+        }
+    })
+    .then(response => {
+        // Check if the response is successful
+        if (!response.ok) {
+            // If response is not OK, try to parse error message
+            return response.json().then(errorData => {
+                throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+            }).catch(() => {
+                // Fallback error if JSON parsing fails
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Success notification
+        showNotificationOk("Product successfully added to supplier!");
+        
+        // Remove the input row
+        const productInputRow = document.getElementById(`product-input-row-${supplierId}`);
+        if (productInputRow) {
+            productInputRow.remove();
+        }
+    })
+    .catch(error => {
+        // Error notification
+        console.error("Error adding product to supplier:", error);
+        showNotificationError(error.message || "Failed to add product to supplier.");
+    });
+}
+
+// Update displaySuppliers function remains the same
+function displaySuppliers(suppliers) {
+    const tableBodySupplier = document.getElementById("supplier-table-body");
+
+    if (!tableBodySupplier) {
+        console.error("Supplier table body not found.");
+        return;
+    }
+
+    tableBodySupplier.innerHTML = ""; // Clear the table body
+
+    if (!suppliers || suppliers.length === 0) {
+        tableBodySupplier.innerHTML = "<tr><td colspan='6'>No suppliers found.</td></tr>";
+        return;
+    }
+
+    suppliers.forEach(supplier => {
+        const row = `
+            <tr id="supplier-row-${supplier.supplierID}">
+                <td>${supplier.supplierID}</td>
+                <td contenteditable="false" id="supplier-name-${supplier.supplierID}">${supplier.name}</td>
+                <td contenteditable="false" id="supplier-contactNumber-${supplier.supplierID}">${supplier.contactNumber}</td>
+                <td contenteditable="false" id="supplier-address-${supplier.supplierID}">${supplier.address}</td>
+                <td>
+                    <button id="edit-button-${supplier.supplierID}" onclick="toggleEditSupplier('${supplier.supplierID}', event)" class="edit-btn">Edit</button>
+                    <button onclick="deleteSupplier('${supplier.supplierID}', event)" class="delete-btn">Delete</button>
+                    <button onclick="addProductToSupplier('${supplier.supplierID}')" class="add-product-btn">Add Product</button>
+                </td>
+            </tr>`;
+        tableBodySupplier.innerHTML += row;
+    });
+}
+
