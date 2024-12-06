@@ -85,6 +85,7 @@
     <!-- Add Supplier Form -->
     <div id="supplier-management">
         <button id="add-supplier-btn" class="add-supplier-btn">Add Supplier</button>
+        <button id="add-product-supplier-btn" class="add-supplier-btn">Add Product to Supplier</button>
         <form class="supplier-form" id="supplier-form">
             <span class="icon-close">
                 <ion-icon name="close"></ion-icon>
@@ -103,7 +104,17 @@
     </form>
     <button id="view-all-btn">View All</button>
 
-    
+    <!-- Add Product Form -->
+    <div id="add-product-supplier-form" class="supplier-form">
+        <form class="add-product-supplier-form" id="add-product-supplier-form">
+            <span class="icon-close" id="close-product-supplier-form"></span>
+        <input type="text" id="product-supplier-id" placeholder="Supplier ID" required>
+        <input type="text" id="product-id" placeholder="Product ID" required>
+        <button id="save-product-supplier">Add Product</button>
+        </form>
+    </div>
+
+
     <!-- Supplier List -->
     <table>
         <thead>
@@ -127,9 +138,6 @@
         <ion-icon name="checkmark" class="icon"></ion-icon>
         <h2 id="content-success"></h2>
     </button>
-
-    <button id="add-product-to-supplier-btn" class="add-product-btn">Add Product to Supplier</button>
-    
 
     <script src="supplierManagement.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>

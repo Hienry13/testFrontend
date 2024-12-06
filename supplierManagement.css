@@ -579,3 +579,10 @@ table .edit-button:hover{
 #supplier-table-body tr[id^="product-input-row-"] button:hover {
     background-color: #218838;
 }
+#add-product-supplier-btn {
+    position: fixed;
+    bottom: 30px;
+    left: 45%;
+    z-index: 1;
+}
+

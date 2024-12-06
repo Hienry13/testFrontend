@@ -397,3 +397,79 @@ function displaySuppliers(suppliers) {
     });
 }
 
+
+
+
+// Manage Add Product to Supplier Form Visibility
+const addProductSupplierBtn = document.getElementById("add-product-supplier-btn");
+const closeProductSupplierForm = document.getElementById("close-product-supplier-form");
+const productSupplierForm = document.getElementById("add-product-supplier-form");
+
+addProductSupplierBtn.addEventListener("click", () => {
+    productSupplierForm.classList.add("active");
+    addProductSupplierBtn.classList.add("close");
+});
+
+closeProductSupplierForm.addEventListener("click", () => {
+    productSupplierForm.classList.remove("active");
+    addProductSupplierBtn.classList.remove("close");
+});
+
+// Add Product to Supplier
+document.getElementById("save-product-supplier").addEventListener("click", (e) => {
+    e.preventDefault();
+    
+    const supplierId = document.getElementById("product-supplier-id").value.trim();
+    const productId = document.getElementById("product-id").value.trim();
+
+    // Validate inputs
+    if (!supplierId || !productId) {
+        showNotificationError("Please enter both Supplier ID and Product ID");
+        return;
+    }
+
+    // Prepare the payload
+    const payload = {
+        supplierID: supplierId,
+        productID: productId
+    };
+
+    // Fetch request to add product to supplier
+    fetch('https://backend-ims-zuqh.onrender.com/api/suppliers/add-product', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => {
+        // Check if the response is successful
+        if (!response.ok) {
+            // If response is not OK, try to parse error message
+            return response.json().then(errorData => {
+                throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+            }).catch(() => {
+                // Fallback error if JSON parsing fails
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Success notification
+        showNotificationOk("Product successfully added to supplier!");
+        
+        // Close the form
+        productSupplierForm.classList.remove("active");
+        addProductSupplierBtn.classList.remove("close");
+        
+        // Clear input fields
+        document.getElementById("product-supplier-id").value = '';
+        document.getElementById("product-id").value = '';
+    })
+    .catch(error => {
+        // Error notification
+        console.error("Error adding product to supplier:", error);
+        showNotificationError(error.message || "Failed to add product to supplier.");
+    });
+});
