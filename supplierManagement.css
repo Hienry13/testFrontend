@@ -586,3 +586,45 @@ table .edit-button:hover{
     z-index: 1;
 }
 
+#add-product-supplier-form .icon-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    background: #082033;
+    font-size: 2em;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom-left-radius: 20px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+#add-product-supplier-form .icon-close:hover {
+    background-color: var(--second-color);
+    color: var(--first-color);
+}
+
+#save-product-supplier {
+    padding: 10px;
+    margin: 5px;
+    width: 100%;
+    max-width: 300px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: var(--first-color);
+    color: var(--white-color);
+    font-weight: bold;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transform: scale(1);
+    transition: 0.5s;
+}
+
+#save-product-supplier:hover {
+    background-color: var(--second-color);
+    color: var(--first-color);
+}

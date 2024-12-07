@@ -473,3 +473,32 @@ document.getElementById("save-product-supplier").addEventListener("click", (e) =
         showNotificationError(error.message || "Failed to add product to supplier.");
     });
 });
+
+// Function to toggle between all suppliers and first 8 suppliers
+function viewAllOrHideSuppliers() {
+    const viewAllBtn = document.getElementById("view-all-btn");
+    
+    fetch('https://backend-ims-zuqh.onrender.com/api/suppliers/get-all')
+        .then(response => response.json())
+        .then(data => {
+            if (viewAllBtn.textContent === "View All") {
+                // Show all suppliers
+                displaySuppliers(data);
+                viewAllBtn.textContent = "Hide";
+            } else {
+                // Show only first 8 suppliers
+                displaySuppliers(data.slice(0, 8));
+                viewAllBtn.textContent = "View All";
+            }
+        })
+        .catch(error => {
+            console.error("Error: ", error);
+            showNotificationError("Failed to fetch suppliers.");
+        });
+}
+
+// Add event listener to toggle supplier view
+document.getElementById("view-all-btn").addEventListener("click", (event) => {
+    event.preventDefault();
+    viewAllOrHideSuppliers();
+});
