@@ -105,16 +105,16 @@
 
     
     <!-- Supplier List -->
-    <table>
-        <thead>
-            <tr>
-                <th>Supplier ID</th>
-                <th>Name</th>
-                <th>Contact</th>
-                <th>Address</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+    <table id="supplier-table">
+    <thead>
+        <tr>
+            <th>Supplier ID</th>
+            <th id="sort-name" style="cursor: pointer;">Name</th> <!-- Add cursor to indicate it's clickable -->
+            <th>Contact Number</th>
+            <th>Address</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
         <tbody id="supplier-table-body">
         </tbody>
     </table>
@@ -128,6 +128,39 @@
         <h2 id="content-success"></h2>
     </button>
 
+
+    <div id="product-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal" id="close-modal">&times;</span>
+            <h2>Supplier Products</h2>
+            <p>Supplier ID: <span id="modal-supplier-id"></span></p>
+            <table id="modal-product-table">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div style="margin-top: 20px;">
+                <input 
+                    type="text" 
+                    id="input-product-id" 
+                    placeholder="Enter Product ID" 
+                    style="padding: 5px; width: 200px; margin-right: 10px;"
+                />
+                <button id="add-product-btn" style="padding: 5px 10px;">Add Product</button>
+            </div>
+            <div id="product-message" style="margin-top: 20px; color: red; font-weight: bold;"></div>
+        </div>
+    </div>
+    
+    <div id="product-message" style="margin-top: 20px; color: red; font-weight: bold;"></div>
+
+    
     <script src="supplierManagement.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>

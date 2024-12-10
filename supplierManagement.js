@@ -190,15 +190,17 @@ function displaySuppliers(suppliers) {
                 <td contenteditable="false" id="supplier-name-${supplier.supplierID}">${supplier.name}</td>
                 <td contenteditable="false" id="supplier-contactNumber-${supplier.supplierID}">${supplier.contactNumber}</td>
                 <td contenteditable="false" id="supplier-address-${supplier.supplierID}">${supplier.address}</td>
-                <td>${supplier.lastUpdate || "N/A"}</td>
                 <td>
                     <button id="edit-button-${supplier.supplierID}" onclick="toggleEditSupplier('${supplier.supplierID}', event)" class="edit-btn">Edit</button>
                     <button onclick="deleteSupplier('${supplier.supplierID}', event)" class="delete-btn">Delete</button>
+                    <button onclick="addProductToSupplier('${supplier.supplierID}')" class="add-product-btn">Add Product</button>
                 </td>
             </tr>`;
         tableBodySupplier.innerHTML += row;
     });
 }
+
+
 
 // Notifications
 const showNotificationError = (message) => {
@@ -263,5 +265,279 @@ document.getElementById("search-text").addEventListener("input", searchSuppliers
 // Add event listener to toggle supplier view
 document.getElementById("view-all-btn").addEventListener("click", (event) => {
     event.preventDefault();
-    viewAllOrHideSuppliers();
+    viewAllOrHideSuppliers()();
 });
+
+
+// Add Product to Supplier Function
+function addProductToSupplier(supplierId) {
+    const row = document.getElementById(`supplier-row-${supplierId}`);
+    
+    // Remove any existing product input rows
+    const existingProductInputRow = document.getElementById(`product-input-row-${supplierId}`);
+    if (existingProductInputRow) {
+        existingProductInputRow.remove();
+        return;
+    }
+
+    // Create a new row for product input
+    const productInputRow = document.createElement('tr');
+    productInputRow.id = `product-input-row-${supplierId}`;
+    productInputRow.innerHTML = `
+        <td colspan="5" style="background-color: #333; padding: 10px;">
+            <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                <input 
+                    type="text" 
+                    id="product-id-input-${supplierId}" 
+                    placeholder="Enter Product ID" 
+                    style="padding: 5px; width: 200px;"
+                >
+                <button 
+                    onclick="submitProductToSupplier(${supplierId})" 
+                    style="
+                        padding: 5px 10px; 
+                        background-color: #28a745; 
+                        color: white; 
+                        border: none; 
+                        border-radius: 4px;
+                        cursor: pointer;
+                    "
+                >
+                    Submit
+                </button>
+            </div>
+        </td>
+    `;
+
+    // Insert the new row right after the current supplier row
+    row.insertAdjacentElement('afterend', productInputRow);
+
+    // Focus on the input field
+    document.getElementById(`product-id-input-${supplierId}`).focus();
+}
+
+function submitProductToSupplier(supplierId) {
+    // Get the product ID from the input
+    const productIdInput = document.getElementById(`product-id-input-${supplierId}`);
+    const productId = productIdInput.value.trim();
+
+    // Validate input
+    if (!productId) {
+        showNotificationError("Product ID cannot be empty.");
+        return;
+    }
+
+    // Fetch request to add product to supplier
+    fetch(`https://backend-ims-zuqh.onrender.com/api/suppliers/${supplierId}/products/${productId}`, {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json' 
+        }
+    })
+    .then(response => {
+        // Check if the response is successful
+        if (!response.ok) {
+            // If response is not OK, try to parse error message
+            return response.json().then(errorData => {
+                throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+            }).catch(() => {
+                // Fallback error if JSON parsing fails
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Success notification
+        showNotificationOk("Product successfully added to supplier!");
+        
+        // Remove the input row
+        const productInputRow = document.getElementById(`product-input-row-${supplierId}`);
+        if (productInputRow) {
+            productInputRow.remove();
+        }
+    })
+    .catch(error => {
+        // Error notification
+        console.error("Error adding product to supplier:", error);
+        showNotificationError(error.message || "Failed to add product to supplier.");
+    });
+}
+
+function displaySuppliers(suppliers) {
+    const tableBodySupplier = document.getElementById("supplier-table-body");
+
+    if (!tableBodySupplier) {
+        console.error("Supplier table body not found.");
+        return;
+    }
+
+    tableBodySupplier.innerHTML = ""; // Clear the table body
+
+    if (!suppliers || suppliers.length === 0) {
+        tableBodySupplier.innerHTML = "<tr><td colspan='6'>No suppliers found.</td></tr>";
+        return;
+    }
+
+    suppliers.forEach(supplier => {
+        const row = `
+            <tr id="supplier-row-${supplier.supplierID}">
+                <td>${supplier.supplierID}</td>
+                <td contenteditable="false" id="supplier-name-${supplier.supplierID}">${supplier.name}</td>
+                <td contenteditable="false" id="supplier-contactNumber-${supplier.supplierID}">${supplier.contactNumber}</td>
+                <td contenteditable="false" id="supplier-address-${supplier.supplierID}">${supplier.address}</td>
+                <td>
+                    <button id="edit-button-${supplier.supplierID}" onclick="toggleEditSupplier('${supplier.supplierID}', event)" class="edit-btn">Edit</button>
+                    <button onclick="deleteSupplier('${supplier.supplierID}', event)" class="delete-btn">Delete</button>
+                    <button onclick="viewSupplierProducts('${supplier.supplierID}')" class="view-btn">View</button>
+                </td>
+            </tr>`;
+        tableBodySupplier.innerHTML += row;
+    });
+}
+
+
+
+// View Product
+function viewSupplierProducts(supplierID) {
+    const modal = document.getElementById("product-modal");
+    const modalContent = modal.querySelector(".modal-content");
+    const modalSupplierId = document.getElementById("modal-supplier-id");
+    const modalProductTableBody = document.getElementById("modal-product-table").querySelector("tbody");
+
+    if (!modal || !modalContent || !modalSupplierId || !modalProductTableBody) {
+        console.error("Modal or related elements not found!");
+        return;
+    }
+
+    modalSupplierId.textContent = supplierID;
+
+    fetch(`https://backend-ims-zuqh.onrender.com/api/suppliers/${supplierID}/products`)
+        .then((response) => response.json())
+        .then((products) => {
+            // Xóa nội dung cũ
+            modalProductTableBody.innerHTML = "";
+
+            // Thêm sản phẩm mới vào bảng
+            if (products && products.length > 0) {
+                products.forEach((product) => {
+                    const row = `
+                        <tr>
+                            <td>${product.id}</td>
+                            <td>${product.name}</td>
+                            <td>${product.price}</td>
+                            <td>${product.stock}</td>
+                        </tr>`;
+                    modalProductTableBody.innerHTML += row;
+                });
+            } else {
+                modalProductTableBody.innerHTML = "<tr><td colspan='4'>No products found.</td></tr>";
+            }
+            modal.classList.add("show");
+            setTimeout(() => {
+                modalContent.classList.add("show");
+            }, 100); 
+        })
+        .catch((error) => {
+            console.error("Error fetching products:", error);
+            modalProductTableBody.innerHTML = "<tr><td colspan='4'>Failed to fetch products.</td></tr>";
+            modal.classList.add("show");
+            setTimeout(() => {
+                modalContent.classList.add("show");
+            }, 100);
+        });
+
+}
+document.getElementById("close-modal").onclick = function () {
+    const modal = document.getElementById("product-modal");
+    const modalContent = modal.querySelector(".modal-content");
+
+    modalContent.classList.remove("show");
+    setTimeout(() => {
+        modal.classList.remove("show");
+    }, 500); 
+};
+
+
+let isViewAll = false; // Trạng thái mặc định: hiển thị 8 supplier
+let isSortedAscending = true; // Trạng thái mặc định khi sắp xếp theo A-Z
+let originalSuppliers = []; // Lưu trữ danh sách nhà cung cấp ban đầu
+
+// Hàm để fetch và hiển thị supplier
+function fetchAndRenderSuppliers() {
+    const url = 'https://backend-ims-zuqh.onrender.com/api/suppliers/get-all';
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            originalSuppliers = [...data]; // Lưu trữ dữ liệu ban đầu
+            renderSuppliers(isViewAll ? data : data.slice(0, 8)); // Render dữ liệu dựa trên trạng thái "View All"
+        })
+        .catch(error => {
+            console.error("Error fetching suppliers:", error); // Log lỗi
+            showNotificationError("Failed to fetch suppliers.");
+        });
+}
+
+// Hàm render danh sách suppliers vào bảng
+function renderSuppliers(suppliers) {
+    const supplierTableBody = document.getElementById("supplier-table-body");
+    supplierTableBody.innerHTML = ""; // Xóa bảng trước khi render lại
+
+    suppliers.forEach(supplier => {
+        const row = `
+            <tr id="supplier-row-${supplier.supplierID}">
+                <td>${supplier.supplierID}</td>
+                <td>${supplier.name}</td>
+                <td>${supplier.contactNumber}</td>
+                <td>${supplier.address}</td>
+                <td>
+                    <button id="edit-button-${supplier.supplierID}" onclick="toggleEditSupplier('${supplier.supplierID}', event)" class="edit-btn">Edit</button>
+                    <button onclick="deleteSupplier('${supplier.supplierID}', event)" class="delete-btn">Delete</button>
+                    <button onclick="viewSupplierProducts('${supplier.supplierID}')" class="view-btn">View</button>
+                </td>
+            </tr>
+        `;
+        supplierTableBody.innerHTML += row;
+    });
+}
+
+// Hàm sắp xếp theo tên nhà cung cấp
+function sortSuppliers() {
+    let sortedSuppliers;
+    if (isSortedAscending) {
+        // Sắp xếp từ A-Z
+        sortedSuppliers = [...originalSuppliers].sort((a, b) => a.name.localeCompare(b.name));
+    } else {
+        // Sắp xếp từ Z-A
+        sortedSuppliers = [...originalSuppliers].sort((a, b) => b.name.localeCompare(a.name));
+    }
+
+    // Nếu đang hiển thị tất cả nhà cung cấp, render tất cả, nếu không thì chỉ render 8 supplier
+    renderSuppliers(isViewAll ? sortedSuppliers : sortedSuppliers.slice(0, 8));
+
+    // Đảo ngược trạng thái sắp xếp
+    isSortedAscending = !isSortedAscending;
+}
+
+// Gán sự kiện cho nút "Name" để sắp xếp
+document.getElementById("sort-name").addEventListener("click", () => {
+    sortSuppliers(); // Gọi hàm sắp xếp
+});
+
+// Hàm xử lý sự kiện cho nút "View All"
+const viewAllButton = document.getElementById("view-all-btn");
+viewAllButton.addEventListener("click", () => {
+    if (isViewAll) {
+        renderSuppliers(originalSuppliers.slice(0, 8)); // Hiển thị chỉ 8 supplier
+        viewAllButton.textContent = "View All"; // Đổi nút thành "View All"
+        isViewAll = false;
+    } else {
+        renderSuppliers(originalSuppliers); // Hiển thị tất cả nhà cung cấp
+        viewAllButton.textContent = "Hide"; // Đổi nút thành "Hide"
+        isViewAll = true;
+    }
+});
+
+// Khi trang tải xong, gọi hàm fetchAndRenderSuppliers để hiển thị danh sách nhà cung cấp
+window.addEventListener('DOMContentLoaded', fetchAndRenderSuppliers);
