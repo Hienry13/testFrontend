@@ -364,7 +364,6 @@ function submitProductToSupplier(supplierId) {
     });
 }
 
-// Update displaySuppliers function remains the same
 function displaySuppliers(suppliers) {
     const tableBodySupplier = document.getElementById("supplier-table-body");
 
@@ -390,7 +389,7 @@ function displaySuppliers(suppliers) {
                 <td>
                     <button id="edit-button-${supplier.supplierID}" onclick="toggleEditSupplier('${supplier.supplierID}', event)" class="edit-btn">Edit</button>
                     <button onclick="deleteSupplier('${supplier.supplierID}', event)" class="delete-btn">Delete</button>
-                    <button onclick="addProductToSupplier('${supplier.supplierID}')" class="add-product-btn">Add Product</button>
+                    <button onclick="viewSupplierProducts('${supplier.supplierID}')" class="view-btn">View</button>
                 </td>
             </tr>`;
         tableBodySupplier.innerHTML += row;
@@ -398,81 +397,6 @@ function displaySuppliers(suppliers) {
 }
 
 
-
-
-// Manage Add Product to Supplier Form Visibility
-const addProductSupplierBtn = document.getElementById("add-product-supplier-btn");
-const closeProductSupplierForm = document.getElementById("close-product-supplier-form");
-const productSupplierForm = document.getElementById("add-product-supplier-form");
-
-addProductSupplierBtn.addEventListener("click", () => {
-    productSupplierForm.classList.add("active");
-    addProductSupplierBtn.classList.add("close");
-});
-
-closeProductSupplierForm.addEventListener("click", () => {
-    productSupplierForm.classList.remove("active");
-    addProductSupplierBtn.classList.remove("close");
-});
-
-// Add Product to Supplier
-document.getElementById("save-product-supplier").addEventListener("click", (e) => {
-    e.preventDefault();
-    
-    const supplierId = document.getElementById("product-supplier-id").value.trim();
-    const productId = document.getElementById("product-id").value.trim();
-
-    // Validate inputs
-    if (!supplierId || !productId) {
-        showNotificationError("Please enter both Supplier ID and Product ID");
-        return;
-    }
-
-    // Prepare the payload
-    const payload = {
-        supplierID: supplierId,
-        productID: productId
-    };
-
-    // Fetch request to add product to supplier
-    fetch('https://backend-ims-zuqh.onrender.com/api/suppliers/add-product', {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json' 
-        },
-        body: JSON.stringify(payload)
-    })
-    .then(response => {
-        // Check if the response is successful
-        if (!response.ok) {
-            // If response is not OK, try to parse error message
-            return response.json().then(errorData => {
-                throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
-            }).catch(() => {
-                // Fallback error if JSON parsing fails
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Success notification
-        showNotificationOk("Product successfully added to supplier!");
-        
-        // Close the form
-        productSupplierForm.classList.remove("active");
-        addProductSupplierBtn.classList.remove("close");
-        
-        // Clear input fields
-        document.getElementById("product-supplier-id").value = '';
-        document.getElementById("product-id").value = '';
-    })
-    .catch(error => {
-        // Error notification
-        console.error("Error adding product to supplier:", error);
-        showNotificationError(error.message || "Failed to add product to supplier.");
-    });
-});
 
 // Function to toggle between all suppliers and first 8 suppliers
 function viewAllOrHideSuppliers() {
@@ -502,3 +426,66 @@ document.getElementById("view-all-btn").addEventListener("click", (event) => {
     event.preventDefault();
     viewAllOrHideSuppliers();
 });
+
+function viewSupplierProducts(supplierID) {
+    const modal = document.getElementById("product-modal");
+    const modalSupplierId = document.getElementById("modal-supplier-id");
+    const modalProductTable = document.getElementById("modal-product-table");
+
+    // Kiểm tra sự tồn tại của modal và các phần tử bên trong
+    if (!modal || !modalSupplierId || !modalProductTable) {
+        console.error("Modal or related elements not found!");
+        return;
+    }
+
+    const modalProductTableBody = modalProductTable.querySelector("tbody");
+    if (!modalProductTableBody) {
+        console.error("Modal product table body not found!");
+        return;
+    }
+
+    // Hiển thị ID nhà cung cấp
+    modalSupplierId.textContent = supplierID;
+
+    // Gọi API để lấy danh sách sản phẩm
+    fetch(`https://backend-ims-zuqh.onrender.com/api/suppliers/${supplierID}/products`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to fetch products.");
+            }
+            return response.json();
+        })
+        .then(products => {
+            // Xóa nội dung cũ trong bảng
+            modalProductTableBody.innerHTML = "";
+
+            if (products && products.length > 0) {
+                products.forEach(product => {
+                    const row = `
+                        <tr>
+                            <td>${product.id}</td>
+                            <td>${product.name}</td>
+                            <td>${product.price}</td>
+                            <td>${product.stock}</td>
+                        </tr>`;
+                    modalProductTableBody.innerHTML += row;
+                });
+            } else {
+                modalProductTableBody.innerHTML = "<tr><td colspan='4'>No products found.</td></tr>";
+            }
+
+            // Hiển thị modal
+            modal.classList.add("show");
+        })
+        .catch(error => {
+            console.error("Error fetching products:", error);
+            modalProductTableBody.innerHTML = "<tr><td colspan='4'>Failed to fetch products.</td></tr>";
+            modal.classList.add("show");
+        });
+}
+
+// Đóng modal
+document.getElementById("close-modal").onclick = () => {
+    const modal = document.getElementById("product-modal");
+    modal.classList.remove("show");
+};
