@@ -459,8 +459,10 @@ document.getElementById("close-modal").onclick = function () {
 };
 
 
+
 let isViewAll = false; // Trạng thái mặc định: hiển thị 8 supplier
 let isSortedAscending = true; // Trạng thái mặc định khi sắp xếp theo A-Z
+let sortedSuppliers = []; // Lưu trữ danh sách nhà cung cấp đã sắp xếp
 let originalSuppliers = []; // Lưu trữ danh sách nhà cung cấp ban đầu
 
 // Hàm để fetch và hiển thị supplier
@@ -471,7 +473,8 @@ function fetchAndRenderSuppliers() {
         .then(response => response.json())
         .then(data => {
             originalSuppliers = [...data]; // Lưu trữ dữ liệu ban đầu
-            renderSuppliers(isViewAll ? data : data.slice(0, 8)); // Render dữ liệu dựa trên trạng thái "View All"
+            sortedSuppliers = [...data]; // Khởi tạo danh sách đã sắp xếp
+            renderSuppliers(isViewAll ? sortedSuppliers : sortedSuppliers.slice(0, 8)); // Render dữ liệu dựa trên trạng thái "View All"
         })
         .catch(error => {
             console.error("Error fetching suppliers:", error); // Log lỗi
@@ -504,16 +507,19 @@ function renderSuppliers(suppliers) {
 
 // Hàm sắp xếp theo tên nhà cung cấp
 function sortSuppliers() {
-    let sortedSuppliers;
+    let sortedList;
     if (isSortedAscending) {
         // Sắp xếp từ A-Z
-        sortedSuppliers = [...originalSuppliers].sort((a, b) => a.name.localeCompare(b.name));
+        sortedList = [...originalSuppliers].sort((a, b) => a.name.localeCompare(b.name));
     } else {
         // Sắp xếp từ Z-A
-        sortedSuppliers = [...originalSuppliers].sort((a, b) => b.name.localeCompare(a.name));
+        sortedList = [...originalSuppliers].sort((a, b) => b.name.localeCompare(a.name));
     }
 
-    // Nếu đang hiển thị tất cả nhà cung cấp, render tất cả, nếu không thì chỉ render 8 supplier
+    // Cập nhật danh sách đã sắp xếp
+    sortedSuppliers = sortedList;
+
+    // Render lại bảng với dữ liệu đã sắp xếp
     renderSuppliers(isViewAll ? sortedSuppliers : sortedSuppliers.slice(0, 8));
 
     // Đảo ngược trạng thái sắp xếp
@@ -529,11 +535,11 @@ document.getElementById("sort-name").addEventListener("click", () => {
 const viewAllButton = document.getElementById("view-all-btn");
 viewAllButton.addEventListener("click", () => {
     if (isViewAll) {
-        renderSuppliers(originalSuppliers.slice(0, 8)); // Hiển thị chỉ 8 supplier
+        renderSuppliers(sortedSuppliers.slice(0, 8)); // Hiển thị chỉ 8 supplier từ danh sách đã sắp xếp
         viewAllButton.textContent = "View All"; // Đổi nút thành "View All"
         isViewAll = false;
     } else {
-        renderSuppliers(originalSuppliers); // Hiển thị tất cả nhà cung cấp
+        renderSuppliers(sortedSuppliers); // Hiển thị tất cả nhà cung cấp từ danh sách đã sắp xếp
         viewAllButton.textContent = "Hide"; // Đổi nút thành "Hide"
         isViewAll = true;
     }
