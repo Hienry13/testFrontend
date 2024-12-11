@@ -447,6 +447,7 @@ viewAllButton.addEventListener("click", () => {
 window.addEventListener('DOMContentLoaded', fetchAndRenderSuppliers);
 
 
+
 // Lấy các phần tử DOM
 const addProductToSupplierForm = document.getElementById("add-product-to-supplier-form");
 const addProductToSupplierModal = document.getElementById("add-product-to-supplier-modal");
@@ -454,7 +455,7 @@ const closeAddProductToSupplierModal = document.getElementById("close-add-produc
 
 // Khi nhấn vào nút "Add Product" trong modal
 addProductToSupplierForm.addEventListener("submit", (event) => {
-    event.preventDefault(); // Ngăn chặn hành vi mặc định
+    event.preventDefault(); // Ngăn chặn hành vi mặc định của form
 
     // Lấy Product ID từ trường input
     const productID = document.getElementById("modalProductID").value.trim();
@@ -469,7 +470,7 @@ addProductToSupplierForm.addEventListener("submit", (event) => {
     }
 
     // Gửi yêu cầu POST đến API để thêm sản phẩm cho nhà cung cấp
-    fetch("https://backend-ims-zuqh.onrender.com/api/suppliers/add-product", {
+    fetch(`https://backend-ims-zuqh.onrender.com/api/suppliers/${supplierID}/products/${productID}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -492,7 +493,9 @@ addProductToSupplierForm.addEventListener("submit", (event) => {
         .then((data) => {
             // Hiển thị thông báo thành công
             alert(`Product added successfully: ${JSON.stringify(data)}`);
-            addProductToSupplierModal.style.display = "none"; // Đóng modal
+
+            // Đóng modal
+            addProductToSupplierModal.style.display = "none";
             addProductToSupplierForm.reset(); // Reset form
         })
         .catch((error) => {
@@ -505,7 +508,6 @@ addProductToSupplierForm.addEventListener("submit", (event) => {
 closeAddProductToSupplierModal.addEventListener("click", () => {
     addProductToSupplierModal.style.display = "none"; // Đóng modal
 });
-
 
 
 
