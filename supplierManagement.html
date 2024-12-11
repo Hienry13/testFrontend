@@ -85,6 +85,8 @@
     <!-- Add Supplier Form -->
     <div id="supplier-management">
         <button id="add-supplier-btn" class="add-supplier-btn">Add Supplier</button>
+        <button id="add-product-supplier-btn" class="add-supplier-btn">Add Product to Supplier</button>
+
         <form class="supplier-form" id="supplier-form">
             <span class="icon-close">
                 <ion-icon name="close"></ion-icon>
@@ -93,6 +95,16 @@
             <input type="text" id="supplier-contactNumber" placeholder="Contact Info" required>
             <input type="text" id="supplier-address" placeholder="address" required>
             <button id="save-supplier" class="save-supplier">Save Supplier</button>
+        </form>
+    </div>
+
+     <!-- Add Product Form -->
+     <div id="add-product-supplier-form" class="supplier-form">
+        <form class="add-product-supplier-form" id="add-product-supplier-form">
+            <span class="icon-close" id="close-product-supplier-form"></span>
+        <input type="text" id="product-supplier-id" placeholder="Supplier ID" required>
+        <input type="text" id="product-id" placeholder="Product ID" required>
+        <button id="save-product-supplier">Add Product</button>
         </form>
     </div>
 
@@ -160,6 +172,22 @@
     
     <div id="product-message" style="margin-top: 20px; color: red; font-weight: bold;"></div>
 
+<!-- Form modal để thêm Product -->
+<div id="add-product-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-modal" id="close-add-product-modal">&times;</span>
+        <h2>Add Product to Supplier</h2>
+        <form id="add-product-form">
+            <label for="productID">Product ID:</label>
+            <input type="text" id="productID" name="productID" required />
+
+            <label for="supplierID">Supplier ID:</label>
+            <input type="text" id="supplierID" name="supplierID" required />
+
+            <button type="submit" class="submit-btn">Submit</button>
+        </form>
+    </div>
+</div>
     
     <script src="supplierManagement.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>

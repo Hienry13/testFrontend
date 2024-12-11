@@ -226,6 +226,8 @@ const showNotificationOk = (message) => {
         console.error("Notification OK element not found.");
     }
 };
+
+
 // Search in frontend
 async function searchSuppliers() {
     try {
@@ -268,101 +270,6 @@ document.getElementById("view-all-btn").addEventListener("click", (event) => {
     viewAllOrHideSuppliers()();
 });
 
-
-// Add Product to Supplier Function
-function addProductToSupplier(supplierId) {
-    const row = document.getElementById(`supplier-row-${supplierId}`);
-    
-    // Remove any existing product input rows
-    const existingProductInputRow = document.getElementById(`product-input-row-${supplierId}`);
-    if (existingProductInputRow) {
-        existingProductInputRow.remove();
-        return;
-    }
-
-    // Create a new row for product input
-    const productInputRow = document.createElement('tr');
-    productInputRow.id = `product-input-row-${supplierId}`;
-    productInputRow.innerHTML = `
-        <td colspan="5" style="background-color: #333; padding: 10px;">
-            <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                <input 
-                    type="text" 
-                    id="product-id-input-${supplierId}" 
-                    placeholder="Enter Product ID" 
-                    style="padding: 5px; width: 200px;"
-                >
-                <button 
-                    onclick="submitProductToSupplier(${supplierId})" 
-                    style="
-                        padding: 5px 10px; 
-                        background-color: #28a745; 
-                        color: white; 
-                        border: none; 
-                        border-radius: 4px;
-                        cursor: pointer;
-                    "
-                >
-                    Submit
-                </button>
-            </div>
-        </td>
-    `;
-
-    // Insert the new row right after the current supplier row
-    row.insertAdjacentElement('afterend', productInputRow);
-
-    // Focus on the input field
-    document.getElementById(`product-id-input-${supplierId}`).focus();
-}
-
-function submitProductToSupplier(supplierId) {
-    // Get the product ID from the input
-    const productIdInput = document.getElementById(`product-id-input-${supplierId}`);
-    const productId = productIdInput.value.trim();
-
-    // Validate input
-    if (!productId) {
-        showNotificationError("Product ID cannot be empty.");
-        return;
-    }
-
-    // Fetch request to add product to supplier
-    fetch(`https://backend-ims-zuqh.onrender.com/api/suppliers/${supplierId}/products/${productId}`, {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json' 
-        }
-    })
-    .then(response => {
-        // Check if the response is successful
-        if (!response.ok) {
-            // If response is not OK, try to parse error message
-            return response.json().then(errorData => {
-                throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
-            }).catch(() => {
-                // Fallback error if JSON parsing fails
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Success notification
-        showNotificationOk("Product successfully added to supplier!");
-        
-        // Remove the input row
-        const productInputRow = document.getElementById(`product-input-row-${supplierId}`);
-        if (productInputRow) {
-            productInputRow.remove();
-        }
-    })
-    .catch(error => {
-        // Error notification
-        console.error("Error adding product to supplier:", error);
-        showNotificationError(error.message || "Failed to add product to supplier.");
-    });
-}
 
 function displaySuppliers(suppliers) {
     const tableBodySupplier = document.getElementById("supplier-table-body");
@@ -415,18 +322,16 @@ function viewSupplierProducts(supplierID) {
     fetch(`https://backend-ims-zuqh.onrender.com/api/suppliers/${supplierID}/products`)
         .then((response) => response.json())
         .then((products) => {
-            // Xóa nội dung cũ
             modalProductTableBody.innerHTML = "";
 
-            // Thêm sản phẩm mới vào bảng
             if (products && products.length > 0) {
                 products.forEach((product) => {
                     const row = `
                         <tr>
-                            <td>${product.id}</td>
-                            <td>${product.name}</td>
+                            <td>${product.productID}</td>
+                            <td>${product.produName}</td>
                             <td>${product.price}</td>
-                            <td>${product.stock}</td>
+                            <td>${product.quantity}</td>
                         </tr>`;
                     modalProductTableBody.innerHTML += row;
                 });
@@ -460,32 +365,30 @@ document.getElementById("close-modal").onclick = function () {
 
 
 
-let isViewAll = false; // Trạng thái mặc định: hiển thị 8 supplier
-let isSortedAscending = true; // Trạng thái mặc định khi sắp xếp theo A-Z
-let sortedSuppliers = []; // Lưu trữ danh sách nhà cung cấp đã sắp xếp
-let originalSuppliers = []; // Lưu trữ danh sách nhà cung cấp ban đầu
+let isViewAll = false; 
+let isSortedAscending = true; 
+let sortedSuppliers = []; 
+let originalSuppliers = []; 
 
-// Hàm để fetch và hiển thị supplier
 function fetchAndRenderSuppliers() {
     const url = 'https://backend-ims-zuqh.onrender.com/api/suppliers/get-all';
 
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            originalSuppliers = [...data]; // Lưu trữ dữ liệu ban đầu
-            sortedSuppliers = [...data]; // Khởi tạo danh sách đã sắp xếp
-            renderSuppliers(isViewAll ? sortedSuppliers : sortedSuppliers.slice(0, 8)); // Render dữ liệu dựa trên trạng thái "View All"
+            originalSuppliers = [...data]; 
+            sortedSuppliers = [...data]; 
+            renderSuppliers(isViewAll ? sortedSuppliers : sortedSuppliers.slice(0, 8)); 
         })
         .catch(error => {
-            console.error("Error fetching suppliers:", error); // Log lỗi
+            console.error("Error fetching suppliers:", error); 
             showNotificationError("Failed to fetch suppliers.");
         });
 }
 
-// Hàm render danh sách suppliers vào bảng
 function renderSuppliers(suppliers) {
     const supplierTableBody = document.getElementById("supplier-table-body");
-    supplierTableBody.innerHTML = ""; // Xóa bảng trước khi render lại
+    supplierTableBody.innerHTML = ""; 
 
     suppliers.forEach(supplier => {
         const row = `
@@ -519,31 +422,173 @@ function sortSuppliers() {
     // Cập nhật danh sách đã sắp xếp
     sortedSuppliers = sortedList;
 
-    // Render lại bảng với dữ liệu đã sắp xếp
     renderSuppliers(isViewAll ? sortedSuppliers : sortedSuppliers.slice(0, 8));
 
-    // Đảo ngược trạng thái sắp xếp
     isSortedAscending = !isSortedAscending;
 }
 
-// Gán sự kiện cho nút "Name" để sắp xếp
 document.getElementById("sort-name").addEventListener("click", () => {
-    sortSuppliers(); // Gọi hàm sắp xếp
+    sortSuppliers(); 
 });
 
-// Hàm xử lý sự kiện cho nút "View All"
 const viewAllButton = document.getElementById("view-all-btn");
 viewAllButton.addEventListener("click", () => {
     if (isViewAll) {
-        renderSuppliers(sortedSuppliers.slice(0, 8)); // Hiển thị chỉ 8 supplier từ danh sách đã sắp xếp
-        viewAllButton.textContent = "View All"; // Đổi nút thành "View All"
+        renderSuppliers(sortedSuppliers.slice(0, 8)); 
+        viewAllButton.textContent = "View All"; 
         isViewAll = false;
     } else {
-        renderSuppliers(sortedSuppliers); // Hiển thị tất cả nhà cung cấp từ danh sách đã sắp xếp
-        viewAllButton.textContent = "Hide"; // Đổi nút thành "Hide"
+        renderSuppliers(sortedSuppliers); 
+        viewAllButton.textContent = "Hide"; 
         isViewAll = true;
     }
 });
 
-// Khi trang tải xong, gọi hàm fetchAndRenderSuppliers để hiển thị danh sách nhà cung cấp
 window.addEventListener('DOMContentLoaded', fetchAndRenderSuppliers);
+
+
+// Lấy các phần tử DOM
+const addProductToSupplierForm = document.getElementById("add-product-to-supplier-form");
+const addProductToSupplierModal = document.getElementById("add-product-to-supplier-modal");
+const closeAddProductToSupplierModal = document.getElementById("close-add-product-to-supplier-modal");
+
+// Khi nhấn vào nút "Add Product" trong modal
+addProductToSupplierForm.addEventListener("submit", (event) => {
+    event.preventDefault(); // Ngăn chặn hành vi mặc định
+
+    // Lấy Product ID từ trường input
+    const productID = document.getElementById("modalProductID").value.trim();
+
+    // Lấy Supplier ID từ phần tử modal hiển thị danh sách sản phẩm (có thể được hiển thị trong một span hoặc id)
+    const supplierID = document.getElementById("supplier-id").textContent.trim();  // Ví dụ supplier-id là nơi chứa Supplier ID
+
+    // Kiểm tra xem Product ID và Supplier ID đã được nhập chưa
+    if (!productID || !supplierID) {
+        alert("Please provide both Product ID and Supplier ID.");
+        return;
+    }
+
+    // Gửi yêu cầu POST đến API để thêm sản phẩm cho nhà cung cấp
+    fetch("https://backend-ims-zuqh.onrender.com/api/suppliers/add-product", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            productID,  // Product ID được nhập từ form
+            supplierID, // Supplier ID lấy từ modal hiển thị danh sách sản phẩm
+        }),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                return response.json().then((error) => {
+                    throw new Error(
+                        `Failed to add product. Status: ${response.status}, Message: ${error.message}`
+                    );
+                });
+            }
+            return response.json();
+        })
+        .then((data) => {
+            // Hiển thị thông báo thành công
+            alert(`Product added successfully: ${JSON.stringify(data)}`);
+            addProductToSupplierModal.style.display = "none"; // Đóng modal
+            addProductToSupplierForm.reset(); // Reset form
+        })
+        .catch((error) => {
+            // Hiển thị thông báo lỗi
+            alert(`Error: ${error.message}`);
+        });
+});
+
+// Đóng modal khi nhấn nút "Close"
+closeAddProductToSupplierModal.addEventListener("click", () => {
+    addProductToSupplierModal.style.display = "none"; // Đóng modal
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Manage Add Product to Supplier Form Visibility
+const addProductSupplierBtn = document.getElementById("add-product-supplier-btn");
+const closeProductSupplierForm = document.getElementById("close-product-supplier-form");
+const productSupplierForm = document.getElementById("add-product-supplier-form");
+
+addProductSupplierBtn.addEventListener("click", () => {
+    productSupplierForm.classList.add("active");
+    addProductSupplierBtn.classList.add("close");
+});
+
+closeProductSupplierForm.addEventListener("click", () => {
+    productSupplierForm.classList.remove("active");
+    addProductSupplierBtn.classList.remove("close");
+});
+
+// Add Product to Supplier
+document.getElementById("save-product-supplier").addEventListener("click", (e) => {
+    e.preventDefault();
+    
+    const supplierId = document.getElementById("product-supplier-id").value.trim();
+    const productId = document.getElementById("product-id").value.trim();
+
+    // Validate inputs
+    if (!supplierId || !productId) {
+        showNotificationError("Please enter both Supplier ID and Product ID");
+        return;
+    }
+
+    // Prepare the payload
+    const payload = {
+        supplierID: supplierId,
+        productID: productId
+    };
+
+    // Fetch request to add product to supplier
+    fetch('https://backend-ims-zuqh.onrender.com/api/suppliers/add-product', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => {
+        // Check if the response is successful
+        if (!response.ok) {
+            // If response is not OK, try to parse error message
+            return response.json().then(errorData => {
+                throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+            }).catch(() => {
+                // Fallback error if JSON parsing fails
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Success notification
+        showNotificationOk("Product successfully added to supplier!");
+        
+        // Close the form
+        productSupplierForm.classList.remove("active");
+        addProductSupplierBtn.classList.remove("close");
+        
+        // Clear input fields
+        document.getElementById("product-supplier-id").value = '';
+        document.getElementById("product-id").value = '';
+    })
+    .catch(error => {
+        // Error notification
+        console.error("Error adding product to supplier:", error);
+        showNotificationError(error.message || "Failed to add product to supplier.");
+    });
+});
