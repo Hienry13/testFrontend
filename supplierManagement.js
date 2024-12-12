@@ -549,8 +549,8 @@ document.getElementById("save-product-supplier").addEventListener("click", (e) =
 
     // Prepare the payload
     const payload = {
-        supplierID: supplierId,
-        productID: productId
+        supplierId: supplierId,
+        productId: productId
     };
 
     // Fetch request to add product to supplier
