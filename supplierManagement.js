@@ -468,40 +468,40 @@ window.addEventListener('DOMContentLoaded', fetchAndRenderSuppliers);
 
 
 
+// Đảm bảo sự kiện click cho nút "Add Product"
 document.getElementById('add-product-btn').addEventListener('click', function () {
-  // Lấy giá trị từ các input trên giao diện
-const supplierID = document.getElementById("modal-supplier-id").textContent; // Supplier ID từ modal
-const productID = document.getElementById("input-product-id").value; // Product ID từ input
+    const supplierID = document.getElementById('modal-supplier-id').textContent; // Lấy Supplier ID từ modal
+    const productID = document.getElementById('input-product-id').value; // Lấy Product ID từ input
 
-// Gửi yêu cầu POST với đúng đường dẫn API
-fetch(`api/suppliers/${supplierID}/products/${productID}`, {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-})
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
-        }
-        return response.json();
+    if (!productID) {
+        document.getElementById('product-message').textContent = "Please enter a Product ID!";
+        return;
+    }
+
+    // Gửi dữ liệu lên server (hoặc xử lý tại chỗ nếu không có server)
+    fetch(`api/suppliers/${supplierID}/products/${productID}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
     })
-    .then(data => {
-        console.log('Success:', data);
-        document.getElementById('product-message').textContent = "Product added successfully!";
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('product-message').textContent = "Failed to add product: " + error.message;
-    });
-
-})
-
-
-
-
-
-
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            document.getElementById('product-message').textContent = "Product added successfully!";
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('product-message').textContent = "Failed to add product: " + error.message;
+        });
+    
+    
+});
 
 
 
