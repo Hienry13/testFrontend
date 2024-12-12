@@ -319,9 +319,25 @@ function viewSupplierProducts(supplierID) {
 
     modalSupplierId.textContent = supplierID;
 
+    console.log(`Fetching products for Supplier ID: ${supplierID}`);
+
+    // Start the fetch request
     fetch(`https://backend-ims-zuqh.onrender.com/api/suppliers/${supplierID}/products`)
-        .then((response) => response.json())
+        .then((response) => {
+            console.log("Received response from API");
+
+            // Check if the response is ok
+            if (!response.ok) {
+                console.error(`Failed to fetch. Status: ${response.status}`);
+                return response.json().then((error) => {
+                    throw new Error(`Error: ${error.message}`);
+                });
+            }
+            return response.json(); // Parse response as JSON
+        })
         .then((products) => {
+            console.log("Fetched products:", products);
+
             modalProductTableBody.innerHTML = "";
 
             if (products && products.length > 0) {
@@ -329,7 +345,7 @@ function viewSupplierProducts(supplierID) {
                     const row = `
                         <tr>
                             <td>${product.productID}</td>
-                            <td>${product.produName}</td>
+                            <td>${product.productName}</td>
                             <td>${product.price}</td>
                             <td>${product.quantity}</td>
                         </tr>`;
@@ -338,10 +354,13 @@ function viewSupplierProducts(supplierID) {
             } else {
                 modalProductTableBody.innerHTML = "<tr><td colspan='4'>No products found.</td></tr>";
             }
+
+            console.log("Displaying modal with products");
+
             modal.classList.add("show");
             setTimeout(() => {
                 modalContent.classList.add("show");
-            }, 100); 
+            }, 100);
         })
         .catch((error) => {
             console.error("Error fetching products:", error);
@@ -351,8 +370,8 @@ function viewSupplierProducts(supplierID) {
                 modalContent.classList.add("show");
             }, 100);
         });
-
 }
+
 document.getElementById("close-modal").onclick = function () {
     const modal = document.getElementById("product-modal");
     const modalContent = modal.querySelector(".modal-content");
@@ -448,70 +467,35 @@ window.addEventListener('DOMContentLoaded', fetchAndRenderSuppliers);
 
 
 
-// Lấy các phần tử DOM
-const addProductToSupplierForm = document.getElementById("add-product-to-supplier-form");
-const addProductToSupplierModal = document.getElementById("add-product-to-supplier-modal");
-const closeAddProductToSupplierModal = document.getElementById("close-add-product-to-supplier-modal");
 
-// Khi nhấn vào nút "Add Product" trong modal
-addProductToSupplierForm.addEventListener("submit", (event) => {
-    event.preventDefault(); // Ngăn chặn hành vi mặc định của form
+document.getElementById('add-product-btn').addEventListener('click', function () {
+  // Lấy giá trị từ các input trên giao diện
+const supplierID = document.getElementById("modal-supplier-id").textContent; // Supplier ID từ modal
+const productID = document.getElementById("input-product-id").value; // Product ID từ input
 
-    // Lấy Product ID từ trường input
-    const productID = document.getElementById("modalProductID").value.trim();
-
-    // Lấy Supplier ID từ phần tử modal hiển thị danh sách sản phẩm (có thể được hiển thị trong một span hoặc id)
-    const supplierID = document.getElementById("supplier-id").textContent.trim();  // Ví dụ supplier-id là nơi chứa Supplier ID
-
-    // Kiểm tra xem Product ID và Supplier ID đã được nhập chưa
-    if (!productID || !supplierID) {
-        alert("Please provide both Product ID and Supplier ID.");
-        return;
-    }
-
-    // Gửi yêu cầu POST đến API để thêm sản phẩm cho nhà cung cấp
-    fetch(`https://backend-ims-zuqh.onrender.com/api/suppliers/${supplierID}/products/${productID}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            productID,  // Product ID được nhập từ form
-            supplierID, // Supplier ID lấy từ modal hiển thị danh sách sản phẩm
-        }),
+// Gửi yêu cầu POST với đúng đường dẫn API
+fetch(`api/suppliers/${supplierID}/products/${productID}`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+})
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+        }
+        return response.json();
     })
-        .then((response) => {
-            if (!response.ok) {
-                return response.json().then((error) => {
-                    throw new Error(
-                        `Failed to add product. Status: ${response.status}, Message: ${error.message}`
-                    );
-                });
-            }
-            return response.json();
-        })
-        .then((data) => {
-            // Hiển thị thông báo thành công
-            alert(`Product added successfully: ${JSON.stringify(data)}`);
+    .then(data => {
+        console.log('Success:', data);
+        document.getElementById('product-message').textContent = "Product added successfully!";
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('product-message').textContent = "Failed to add product: " + error.message;
+    });
 
-            // Đóng modal
-            addProductToSupplierModal.style.display = "none";
-            addProductToSupplierForm.reset(); // Reset form
-        })
-        .catch((error) => {
-            // Hiển thị thông báo lỗi
-            alert(`Error: ${error.message}`);
-        });
-});
-
-// Đóng modal khi nhấn nút "Close"
-closeAddProductToSupplierModal.addEventListener("click", () => {
-    addProductToSupplierModal.style.display = "none"; // Đóng modal
-});
-
-
-
-
+})
 
 
 
