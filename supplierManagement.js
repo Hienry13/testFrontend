@@ -479,7 +479,7 @@ document.getElementById('add-product-btn').addEventListener('click', function ()
     }
 
     // Gửi dữ liệu lên server (hoặc xử lý tại chỗ nếu không có server)
-    fetch(`api/suppliers/${supplierID}/products/${productID}`, {
+    fetch(`https://backend-ims-zuqh.onrender.com/api/suppliers/${supplierID}/products/${productID}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
