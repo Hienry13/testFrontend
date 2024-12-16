@@ -477,7 +477,7 @@ document.getElementById('add-product-btn').addEventListener('click', function ()
         document.getElementById('product-message').textContent = "Please enter a Product ID!";
         return;
     }
-
+//hello
     // Gửi dữ liệu lên server (hoặc xử lý tại chỗ nếu không có server)
     fetch(`https://backend-ims-zuqh.onrender.com/api/suppliers/${supplierID}/products/${productID}`, {
         method: 'POST',
