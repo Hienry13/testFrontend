@@ -32,7 +32,7 @@ closeIcon.addEventListener("click", () => {
 
 // Display Suppliers
 function showListSuppliers() {
-    fetch('https://backend-ims-zuqh.onrender.com/api/suppliers/get-all')
+    fetch('http://160.191.50.248:8080/api/suppliers/get-all')
         .then(response => response.json())
         .then(data => {
             displaySuppliers(data.slice(0, 8)); 
@@ -51,7 +51,7 @@ document.getElementById("save-supplier").addEventListener("click", (e) => {
         contactNumber: document.getElementById("supplier-contactNumber").value,
         address: document.getElementById("supplier-address").value
     };
-    fetch('https://backend-ims-zuqh.onrender.com/api/suppliers', {
+    fetch('http://160.191.50.248:8080/api/suppliers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newSupplier)
@@ -232,7 +232,7 @@ const showNotificationOk = (message) => {
 async function searchSuppliers() {
     try {
         const searchTerm = document.getElementById("search-text").value.toLowerCase();
-        const response = await fetch('https://backend-ims-zuqh.onrender.com/api/suppliers/get-all'); 
+        const response = await fetch('http://160.191.50.248:8080/api/suppliers/get-all'); 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -319,26 +319,10 @@ function viewSupplierProducts(supplierID) {
 
     modalSupplierId.textContent = supplierID;
 
-    console.log(`Fetching products for Supplier ID: ${supplierID}`);
-
-    // Start the fetch request
-    fetch(`https://backend-ims-zuqh.onrender.com/api/suppliers/${supplierID}/products`)
-        .then((response) => {
-            console.log("Received response from API");
-
-            // Check if the response is ok
-            if (!response.ok) {
-                console.error(`Failed to fetch. Status: ${response.status}`);
-                return response.json().then((error) => {
-                    throw new Error(`Error: ${error.message}`);
-                });
-            }
-            return response.json(); // Parse response as JSON
-        })
+    fetch(`http://160.191.50.248:8080/api/suppliers/${supplierID}/products`)
+        .then((response) => response.json())
         .then((products) => {
-            console.log("Fetched products:", products);
-
-            modalProductTableBody.innerHTML = "";
+            modalProductTableBody.innerHTML = ""; // Xóa nội dung cũ
 
             if (products && products.length > 0) {
                 products.forEach((product) => {
@@ -348,14 +332,20 @@ function viewSupplierProducts(supplierID) {
                             <td>${product.productName}</td>
                             <td>${product.price}</td>
                             <td>${product.quantity}</td>
+                            <td>
+                                <button 
+                                    class="delete-product-btn" 
+                                    onclick="deleteProduct('${supplierID}', '${product.productID}')"
+                                >
+                                    Delete
+                                </button>
+                            </td>
                         </tr>`;
                     modalProductTableBody.innerHTML += row;
                 });
             } else {
-                modalProductTableBody.innerHTML = "<tr><td colspan='4'>No products found.</td></tr>";
+                modalProductTableBody.innerHTML = "<tr><td colspan='5'>No products found.</td></tr>";
             }
-
-            console.log("Displaying modal with products");
 
             modal.classList.add("show");
             setTimeout(() => {
@@ -364,7 +354,7 @@ function viewSupplierProducts(supplierID) {
         })
         .catch((error) => {
             console.error("Error fetching products:", error);
-            modalProductTableBody.innerHTML = "<tr><td colspan='4'>Failed to fetch products.</td></tr>";
+            modalProductTableBody.innerHTML = "<tr><td colspan='5'>Failed to fetch products.</td></tr>";
             modal.classList.add("show");
             setTimeout(() => {
                 modalContent.classList.add("show");
@@ -372,15 +362,17 @@ function viewSupplierProducts(supplierID) {
         });
 }
 
-document.getElementById("close-modal").onclick = function () {
+// Đóng modal khi nhấn nút X
+document.getElementById("close-modal").addEventListener("click", () => {
     const modal = document.getElementById("product-modal");
     const modalContent = modal.querySelector(".modal-content");
 
+    // Xóa lớp hiển thị modal
     modalContent.classList.remove("show");
     setTimeout(() => {
         modal.classList.remove("show");
-    }, 500); 
-};
+    }, 300); // Thời gian delay cho hiệu ứng
+});
 
 
 
@@ -390,7 +382,7 @@ let sortedSuppliers = [];
 let originalSuppliers = []; 
 
 function fetchAndRenderSuppliers() {
-    const url = 'https://backend-ims-zuqh.onrender.com/api/suppliers/get-all';
+    const url = 'http://160.191.50.248:8080/api/suppliers/get-all';
 
     fetch(url)
         .then(response => response.json())
@@ -479,7 +471,7 @@ document.getElementById('add-product-btn').addEventListener('click', function ()
     }
 
     // Gửi dữ liệu lên server (hoặc xử lý tại chỗ nếu không có server)
-    fetch(`https://backend-ims-zuqh.onrender.com/api/suppliers/${supplierID}/products/${productID}`, {
+    fetch(`http://160.191.50.248:8080/api/suppliers/${supplierID}/products/${productID}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -554,7 +546,7 @@ document.getElementById("save-product-supplier").addEventListener("click", (e) =
     };
 
     // Fetch request to add product to supplier
-    fetch('https://backend-ims-zuqh.onrender.com/api/suppliers/add-product', {
+    fetch('http://160.191.50.248:8080/api/suppliers/add-product', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json' 
@@ -592,3 +584,42 @@ document.getElementById("save-product-supplier").addEventListener("click", (e) =
         showNotificationError(error.message || "Failed to add product to supplier.");
     });
 });
+
+
+async function deleteProduct(supplierID, productID) {
+    // Hiển thị hộp thoại xác nhận
+    const userConfirmed = confirm(`Are you sure you want to delete Product ID: ${productID}?`);
+    if (!userConfirmed) {
+        return; // Người dùng hủy hành động xóa
+    }
+
+    try {
+        console.log(`Deleting Product ID: ${productID} from Supplier ID: ${supplierID}`);
+        console.log(`Request URL: http://160.191.50.248:8080/api/suppliers/${supplierID}/products/${productID}`);
+
+        // Gửi yêu cầu DELETE tới API
+        const response = await fetch(`http://160.191.50.248:8080/api/suppliers/${supplierID}/products/${productID}`, {
+            method: 'DELETE',
+        });
+
+        console.log("Response Status:", response.status); // Log mã trạng thái phản hồi
+
+        // Kiểm tra phản hồi từ backend
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({})); // Parse JSON nếu có thể
+            const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
+            throw new Error(errorMessage);
+        }
+
+        const data = await response.json();
+        alert(`Product deleted successfully: ${data.message || ''}`);
+
+        // Cập nhật lại danh sách sản phẩm sau khi xóa
+        viewSupplierProducts(supplierID);
+    } catch (error) {
+        console.error("Error deleting product:", error); // Log chi tiết lỗi
+        alert(`Failed to delete product: ${error.message}`);
+    }
+}
+
+

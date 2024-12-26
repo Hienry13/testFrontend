@@ -735,3 +735,37 @@ table .edit-button:hover{
     background-color: var(--second-color);
     color: var(--first-color);
 }
+#product-modal td {
+    white-space: normal; /* Cho phép nội dung xuống dòng nếu dài */
+    overflow: visible;   /* Không cắt nội dung */
+    text-overflow: unset; /* Tắt chế độ hiển thị "..." nếu có */
+    visibility: visible; /* Luôn hiển thị nội dung */
+}
+
+.delete-product-btn {
+    background-color: #060120;; /* Màu đỏ tươi */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 14px; /* Cỡ chữ đồng nhất */
+}
+
+.delete-product-btn:hover {
+    background-color: #e60000; /* Màu đỏ đậm khi hover */
+}
+
+#close-modal {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+#close-modal:hover {
+    color: #e60000; /* Màu đỏ khi hover */
+}
+
