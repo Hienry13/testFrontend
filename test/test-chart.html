@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Biểu Đồ</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Test Biểu Đồ</h1>
+    <canvas id="chart" width="400" height="200"></canvas>
+  </div>
+
+  <script>
+    // Dữ liệu JSON mẫu
+    const testDataWeek = {
+      "type": "import",
+      "period": "week",
+      "year": 2024,
+      "month": 12,
+      "data": [
+        { "week": 1, "total": 10 },
+        { "week": 2, "total": 15 },
+        { "week": 3, "total": 8 },
+        { "week": 4, "total": 20 }
+      ]
+    };
+
+    const testDataMonth = {
+      "type": "export",
+      "period": "month",
+      "year": 2024,
+      "data": [
+        { "month": 1, "total": 30 },
+        { "month": 2, "total": 25 },
+        { "month": 3, "total": 40 }
+      ]
+    };
+
+    // Hàm render biểu đồ
+    function renderChart(data) {
+      const labels = [];
+      const dataset = [];
+
+      // Chuẩn bị dữ liệu
+      if (data.period === "week") {
+        data.data.forEach(item => {
+          labels.push(`Tuần ${item.week}`);
+          dataset.push(item.total);
+        });
+      } else if (data.period === "month") {
+        data.data.forEach(item => {
+          labels.push(`Tháng ${item.month}`);
+          dataset.push(item.total);
+        });
+      }
+
+      // Vẽ biểu đồ
+      const ctx = document.getElementById("chart").getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: `Thống kê (${data.type === "import" ? "Phiếu nhập" : "Phiếu xuất"})`,
+            data: dataset,
+            backgroundColor: "rgba(75, 192, 192, 0.6)",
+            borderColor: "rgba(75, 192, 192, 1)",
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true,
+              position: "top"
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    // Test dữ liệu
+    renderChart(testDataWeek); // Thay testDataWeek bằng testDataMonth để kiểm tra với dữ liệu tháng
+  </script>
+</body>
+</html>

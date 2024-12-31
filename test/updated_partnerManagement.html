@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thống Kê</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="updated_partnerManagement.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="updated_partnerManagement.js"></script>
+</head>
+<body>
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="sidebar bg-light vh-100">
+      <h3 class="p-3">Thống Kê</h3>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="navigateTo('report-by-period')">Thống kê phiếu nhập/xuất theo tuần, tháng, năm</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="navigateTo('report-by-product')">Thống kê sản phẩm theo thời gian</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="#" onclick="navigateTo('filter-by-type')">Lọc phiếu Import/Export</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="content p-4 flex-grow-1">
+      <div id="content">
+        <!-- Bộ lọc Import/Export -->
+        <div id="filter-container">
+          <h2 class="mb-3">Lọc phiếu Import/Export</h2>
+          <div class="row g-3 mb-3">
+            <!-- Loại phiếu -->
+            <div class="col-md-6">
+              <label for="filter-type" class="form-label">Loại phiếu:</label>
+              <select id="filter-type" class="form-select">
+                <option value="import">Phiếu nhập</option>
+                <option value="export">Phiếu xuất</option>
+              </select>
+            </div>
+
+            <!-- Nhà cung cấp hoặc Đối tác -->
+            <div class="col-md-6" id="supplier-filter" style="display:none;">
+              <label for="supplierId" class="form-label">Nhà cung cấp:</label>
+              <select id="supplierId" class="form-select">
+                <option value="" disabled selected>Chọn nhà cung cấp</option>
+                <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
+              </select>
+            </div>
+            <div class="col-md-6" id="partner-filter" style="display:none;">
+              <label for="partnerId" class="form-label">Đối tác:</label>
+              <select id="partnerId" class="form-select">
+                <option value="" disabled selected>Chọn đối tác</option>
+                <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Bộ lọc chung -->
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label for="startDate" class="form-label">Từ ngày:</label>
+              <input type="date" id="startDate" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label for="endDate" class="form-label">Đến ngày:</label>
+              <input type="date" id="endDate" class="form-control">
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label for="minProductQuantity" class="form-label">Số lượng sản phẩm (ít nhất):</label>
+              <input type="number" id="minProductQuantity" class="form-control" min="0">
+            </div>
+            <div class="col-md-6">
+              <label for="maxProductQuantity" class="form-label">Số lượng sản phẩm (nhiều nhất):</label>
+              <input type="number" id="maxProductQuantity" class="form-control" min="0">
+            </div>
+          </div>
+
+          <!-- Nút lọc -->
+          <button id="filter-button" class="btn btn-primary">Lọc phiếu</button>
+        </div>
+
+        <!-- Kết quả -->
+        <div id="filter-results" class="mt-3">
+          <!-- Kết quả lọc sẽ được hiển thị tại đây -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Điều chỉnh hiển thị dropdown theo loại phiếu
+    document.addEventListener("DOMContentLoaded", function () {
+      const filterType = document.getElementById("filter-type");
+      const supplierFilter = document.getElementById("supplier-filter");
+      const partnerFilter = document.getElementById("partner-filter");
+
+      filterType.addEventListener("change", function () {
+        if (filterType.value === "import") {
+          supplierFilter.style.display = "block";
+          partnerFilter.style.display = "none";
+        } else if (filterType.value === "export") {
+          supplierFilter.style.display = "none";
+          partnerFilter.style.display = "block";
+        }
+      });
+
+      // Giả lập danh sách nhà cung cấp và đối tác
+      const suppliers = [
+        { id: 1, name: "Nhà cung cấp A" },
+        { id: 2, name: "Nhà cung cấp B" },
+      ];
+
+      const partners = [
+        { id: 1, name: "Đối tác X" },
+        { id: 2, name: "Đối tác Y" },
+      ];
+
+      // Thêm tùy chọn vào dropdown
+      const supplierDropdown = document.getElementById("supplierId");
+      const partnerDropdown = document.getElementById("partnerId");
+
+      suppliers.forEach(supplier => {
+        const option = document.createElement("option");
+        option.value = supplier.id;
+        option.textContent = supplier.name;
+        supplierDropdown.appendChild(option);
+      });
+
+      partners.forEach(partner => {
+        const option = document.createElement("option");
+        option.value = partner.id;
+        option.textContent = partner.name;
+        partnerDropdown.appendChild(option);
+      });
+    });
+  </script>
+</body>
+</html>

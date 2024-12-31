@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- Embedded font and icon -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+        />
+        <link rel="stylesheet" href="reset.css" />
+        <link rel="stylesheet" href="common.css" />
+        <link rel="stylesheet" href="home_style.css" />
+        <link rel="stylesheet" href="report.css">
+        <link
+            rel="shortcut icon"
+            href="./assets/img/output-onlinegiftools (1).gif"
+            type="image/x-icon"
+        />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+        />
+        <title>Home</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <nav class="navbar">
+                <div class="navbar-logo">
+                    <img
+                        src="./assets/img/output-onlinegiftools (1).gif"
+                        alt="The project"
+                    />
+                </div>
+                <a class="navbar-pro navbar-item" id="prolist-project-home" href="index.html">
+                    <span class="material-symbols-outlined navbar-item__icon">
+                        token
+                    </span>
+                    <div class="navbar-pro__title navbar-item__title">Home</div>
+                </a>
+                <a class="navbar-report navbar-item" href="report.html">
+                    <span class="material-symbols-outlined navbar-item__icon">
+                        summarize
+                    </span>
+                    <div class="navbar-report__title navbar-item__title">
+                        Report
+                    </div>
+                </a>
+            </nav>
+            
+            <div class="prolist active">
+                <div class="prolist-head">
+                    <h2 class="prolist-head__title">Report</h2>
+                </div>
+                <div class="prolis-filter">
+                    <select id="all-project" name="project-id">
+                        <option value="bn" disabled selected>-- Select a project --</option>
+                        <!-- Options will be dynamically added -->
+                    </select>
+                </div>
+
+                <div class="prolist-list">
+                    <h3 class="prolist-list__title">Quick Report</h3>
+                    <ol class="rp-option" id="project-list">
+                        <li class="rp-item" id="report1">
+                            <div class="rp-item-icon"></div>
+                            <div class="rp-item-title">Thống kê lượng phiếu nhập/xuất</div>
+                        </li>
+                        <li class="rp-item" id="report2">
+                            <div class="rp-item-icon"></div>
+                            <div class="rp-item-title">Thống kê số lượng sản phẩm được nhập/xuất</div>
+                        </li>
+                        <li class="rp-item" id="report5">
+                            <div class="rp-item-icon"></div>
+                            <div class="rp-item-title">View Overdue Tasks</div>
+                        </li>
+                    </ol>                    
+                </div>
+            </div>
+            <main class="hero home">
+                <div class="hero-nav">
+                    <div class="hero-nav__btn" style="cursor: pointer">
+                        <span class="material-symbols-outlined">
+                            arrow_back
+                        </span>
+                    </div>
+                    <div class="hero-nav__func">
+                        <div class="hero-nav__avt">
+                            <span
+                                class="material-symbols-outlined"
+                                style="cursor: pointer"
+                                id="view-ac-detail"
+                            >
+                                account_circle
+                            </span>
+                            <div class="ac-detail">
+                                <div class="ac-detail-name">User Name</div>
+                                <div class="ac-detail-id">User Id</div>
+                                <div
+                                    class="ac-detail-checkout"
+                                    style="cursor: pointer"
+                                >
+                                    Log Out
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-task" id="show-report">
+                    <canvas id="myChart" width="400" height="180"></canvas>
+                    <canvas id="myChart1" width="400" height="180"></canvas>
+                    
+                </div>
+                <!-- Section for selecting the report type and filters -->
+<!-- Container cho Report 1: Thống kê số lượng phiếu nhập/xuất -->
+<div id="report1-container" class="report-container" style="display: none;">
+    <h2>Thống kê số lượng phiếu nhập/xuất</h2>
+    <div id="report-filters-container">
+        <label for="type">Loại báo cáo:</label>
+        <select id="type">
+            <option value="import">Nhập khẩu</option>
+            <option value="export">Xuất khẩu</option>
+        </select>
+
+        <label for="period">Khoảng thời gian:</label>
+        <select id="period">
+            <option value="week">Tuần</option>
+            <option value="month">Tháng</option>
+            <option value="year">Năm</option>
+        </select>
+
+        <label for="year">Năm:</label>
+        <input type="number" id="year" value="2024">
+
+        <label for="month" id="month-label" style="display: none;">Tháng:</label>
+        <select id="month" style="display: none;">
+            <option value="1">Tháng 1</option>
+            <option value="2">Tháng 2</option>
+            <option value="3">Tháng 3</option>
+            <!-- Add other months here -->
+        </select>
+
+        <button id="submit-report">Thống kê</button>
+    </div>
+    <canvas id="myChart"></canvas>
+</div>
+
+<!-- Container cho Report 2: Thống kê số lượng sản phẩm nhập/xuất -->
+<div id="report2-container" class="report-container" style="display: none;">
+    <h2>Thống kê số lượng sản phẩm nhập/xuất</h2>
+    <div id="report-filters" style="display: none; margin-top: 20px;">
+        <div style="padding: 20px; border: 1px solid #ccc; border-radius: 5px;">
+            <h3>Thống kê số lượng sản phẩm nhập/xuất</h3>
+    
+            <label for="type">Loại phiếu:</label>
+            <select id="type">
+                <option value="import">Phiếu nhập</option>
+                <option value="export">Phiếu xuất</option>
+            </select>
+    
+            <label for="product">Sản phẩm:</label>
+            <select id="product" style="width: 200px;">
+                <option value="">Chọn sản phẩm</option>
+                <!-- Danh sách sản phẩm sẽ được thêm qua JS -->
+            </select>
+    
+            <label for="period">Khoảng thời gian:</label>
+            <select id="period">
+                <option value="week">Tuần</option>
+                <option value="month">Tháng</option>
+                <option value="year">Năm</option>
+            </select>
+    
+            <label for="year">Năm:</label>
+            <input type="number" id="year" value="${new Date().getFullYear()}"/>
+    
+            <label for="month" id="month-label" style="display:none;">Tháng:</label>
+            <select id="month" style="display:none;">
+                <option value="1">Tháng 1</option>
+                <option value="2">Tháng 2</option>
+                <option value="3">Tháng 3</option>
+                <option value="4">Tháng 4</option>
+                <option value="5">Tháng 5</option>
+                <option value="6">Tháng 6</option>
+                <option value="7">Tháng 7</option>
+                <option value="8">Tháng 8</option>
+                <option value="9">Tháng 9</option>
+                <option value="10">Tháng 10</option>
+                <option value="11">Tháng 11</option>
+                <option value="12">Tháng 12</option>
+            </select>
+    
+            <button id="submit-report">Thống kê</button>
+    
+            <div id="chart-container" style="margin-top: 20px;">
+                <canvas id="myChart" width="400" height="200"></canvas>
+            </div>
+    
+        </div>
+    </div>
+
+            </main>
+            
+        </div>
+
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const toggleButton = document.querySelector(".hero-nav__btn");
+                const prolistList = document.querySelector(".prolist");
+                const icon = toggleButton.querySelector(
+                    ".material-symbols-outlined"
+                );
+
+                toggleButton.addEventListener("click", () => {
+                    if (prolistList.classList.contains("active")) {
+                        prolistList.classList.remove("active");
+                        icon.textContent = "arrow_forward";
+                    } else {
+                        prolistList.classList.add("active");
+                        icon.textContent = "arrow_back";
+                    }
+                });
+            });
+            
+        </script>
+        <script
+            type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/toastify-js"
+        ></script>
+        <!-- <script src="./assets/js/main_page.js"></script> -->
+        <script src="report.js"></script>
+    </body>
+</html>

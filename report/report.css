@@ -1,0 +1,62 @@
+.prolist{
+
+}
+
+.rp-option{
+    padding:10px 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.rp-item{
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.rp-item.choosed{
+    color: rgb(61, 255, 61);
+}
+
+.rp-item:hover{
+    color: rgb(117, 255, 117);
+}
+
+#all-project{
+    background-color: transparent;
+    color: #fff;
+    border: none;
+    outline: none;
+    padding: 5px 0;
+    width: 100%;
+}
+
+#all-project>option{
+    color: #000
+}
+
+
+/* Đảm bảo rằng các phần báo cáo không gây đẩy các phần khác */
+.report-container {
+    display: none;
+    width: 100%;
+    position: absolute;  /* Để các phần tử không làm gián đoạn layout */
+    top: 0;
+    left: 0;
+    padding: 10px;
+}
+
+/* Đảm bảo các phần tử báo cáo không chiếm không gian khi không hiển thị */
+#report1-container, #report2-container {
+    display: none;
+}
+
+/* Cập nhật chiều cao cho các phần tử để tránh bị đẩy xuống */
+.hero-task {
+    position: relative;
+    min-height: 500px;
+}
+
+/* Ẩn các phần tử khi không hiển thị */
+.hidden {
+    display: none;
+}
