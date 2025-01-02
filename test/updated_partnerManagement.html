@@ -16,13 +16,13 @@
       <h3 class="p-3">Thống Kê</h3>
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link" href="#" onclick="navigateTo('report-by-period')">Thống kê phiếu nhập/xuất theo tuần, tháng, năm</a>
+          <a class="nav-link" id="nav-period" href="#">Thống kê theo thời gian</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#" onclick="navigateTo('report-by-product')">Thống kê sản phẩm theo thời gian</a>
+          <a class="nav-link" id="nav-product" href="#">Thống kê sản phẩm</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" href="#" onclick="navigateTo('filter-by-type')">Lọc phiếu Import/Export</a>
+          <a class="nav-link" id="nav-filter" href="#">Lọc theo loại</a>
         </li>
       </ul>
     </nav>
@@ -61,17 +61,24 @@
           </div>
 
           <!-- Bộ lọc chung -->
+          <!-- Dropdown chọn thời gian -->
           <div class="row g-3 mb-3">
-            <div class="col-md-6">
-              <label for="startDate" class="form-label">Từ ngày:</label>
-              <input type="date" id="startDate" class="form-control">
-            </div>
-            <div class="col-md-6">
-              <label for="endDate" class="form-label">Đến ngày:</label>
-              <input type="date" id="endDate" class="form-control">
-            </div>
+            <label for="timePeriod" class="form-label">Thời gian:</label>
+            <select id="timePeriod" class="form-select" onchange="toggleMonthInput()">
+              <option value="week">Tuần</option>
+              <option value="month">Tháng</option>
+              <option value="year">Năm</option>
+            </select>
           </div>
 
+          <!-- Trường nhập tháng -->
+          <div id="monthContainer" class="row g-3 mb-3" style="display: none;">
+            <div class="col-md-6">
+              <label for="monthInput" class="form-label">Nhập tháng:</label>
+              <input type="number" id="monthInput" class="form-control" min="1" max="12" placeholder="Nhập từ 1 đến 12">
+            </div>
+          </div>
+          
           <div class="row g-3 mb-3">
             <div class="col-md-6">
               <label for="minProductQuantity" class="form-label">Số lượng sản phẩm (ít nhất):</label>
@@ -112,16 +119,7 @@
         }
       });
 
-      // Giả lập danh sách nhà cung cấp và đối tác
-      const suppliers = [
-        { id: 1, name: "Nhà cung cấp A" },
-        { id: 2, name: "Nhà cung cấp B" },
-      ];
-
-      const partners = [
-        { id: 1, name: "Đối tác X" },
-        { id: 2, name: "Đối tác Y" },
-      ];
+  
 
       // Thêm tùy chọn vào dropdown
       const supplierDropdown = document.getElementById("supplierId");

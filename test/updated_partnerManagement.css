@@ -95,10 +95,7 @@ pre {
 .content {
   margin-left: 250px;
 }
-/* Ẩn input tháng nếu không cần thiết */
-#month {
-  display: none;
-}
+
 
 /* Định dạng tiêu đề */
 h1 {
